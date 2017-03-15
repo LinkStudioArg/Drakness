@@ -25,7 +25,7 @@ public class TileSpawn : MonoBehaviour {
     [SerializeField]
     private GameObject[] items;
     private GameObject newTile;
-
+    private Direction lastDir;
 
     [System.Serializable]
     public struct tile
@@ -38,7 +38,7 @@ public class TileSpawn : MonoBehaviour {
 
     void Start () {
         colorIndex = Random.Range(0, colors.Length);
-       
+        lastDir = Direction.FORWARD;
         dir = Direction.FORWARD;
 		if(tilePrefabs.Length != 0){
 			positionToMove = tilePrefabs[0].tilePrefab.transform.localScale.z;
@@ -54,9 +54,9 @@ public class TileSpawn : MonoBehaviour {
 		if(currentSpawnedTiles < defaultTileNumber)
 		{
             SelectNewTile();
-			CreateTile(newTile);
-			ReposSpawner();
-		}
+            ReposSpawner();
+            CreateTile(newTile);            
+        }
 	}
     void SelectNewTile()
     {
@@ -68,22 +68,37 @@ public class TileSpawn : MonoBehaviour {
         switch (dir)
         {
             case Direction.RIGHT:
-                extendDirection = Vector3.right;
+                //extendDirection = Vector3.right;
+                extendDirection = Vector3.up * 90f;
                 break;
             case Direction.LEFT:
-                extendDirection = -Vector3.right;
+                //extendDirection = -Vector3.right;
+                extendDirection = Vector3.up * -90f;
                 break;
             default:
-                extendDirection = Vector3.forward;
+                //extendDirection = Vector3.forward;
+                extendDirection = Vector3.zero;
                 break;
         }
     }
-
+    bool canspawn  = true;
 	private void ReposSpawner()
 	{
-        SelectNextDirection();
         DecodeDirection();
-        transform.position = transform.position + extendDirection * 2;
+        lastDir = dir;
+        SelectNextDirection();
+        //if (dir != lastDir && !canspawn)
+        //{
+        //    dir = lastDir;
+        //    DecodeDirection();
+        //    canspawn = true;
+        //}
+        //else
+        //    canspawn = false;
+            
+        //transform.position = transform.position + extendDirection * 2;
+        transform.rotation = Quaternion.Euler(extendDirection);
+        transform.position = transform.position + transform.forward * 2;
 	}
 
     private void SelectNextDirection()
@@ -104,10 +119,11 @@ public class TileSpawn : MonoBehaviour {
 
     private void CreateTile(GameObject tile)
 	{
+
 		if(tilePrefabs.Length != 0)
 		{
 			currentSpawnedTiles++;			
-            GameObject go = (GameObject)Instantiate(tile, transform.position, Quaternion.identity);
+            GameObject go = (GameObject)Instantiate(tile, transform.position, transform.rotation);
             go.transform.SetParent( tiles.transform);
             CreateItem(go);
             ChangeColor(go);
