@@ -6,16 +6,15 @@ public class TileTrigger : MonoBehaviour {
 
     
     TileSpawn tileSpawnscript;
-    GameManager gm;
-
+    private ScoreManager scoreManager;
     bool touched = false;
     Color touchedColor;
     [SerializeField]
     MeshRenderer rend;
     void Start()
     {
+        scoreManager = FindObjectOfType<ScoreManager>();
         touched = false;
-        gm = FindObjectOfType<GameManager>();
         tileSpawnscript = FindObjectOfType<TileSpawn>();
         touchedColor = tileSpawnscript.GetDarkColor();
 
@@ -39,8 +38,7 @@ public class TileTrigger : MonoBehaviour {
                 tileSpawnscript.DecreaseTileNumber();
                 rigid.useGravity = true;
                 rigid.isKinematic = false;
-                gm.AddScore(1);
-                
+                scoreManager.AddCurrentScore(1);                
                 Destroy(transform.parent.gameObject, 7);
             }
         }

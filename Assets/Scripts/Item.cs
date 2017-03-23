@@ -6,18 +6,18 @@ public class Item : MonoBehaviour {
 
     private AudioSource myAudioSource;
     private Animator anim;
-    private GameManager gm;
-
+    private ScoreManager scoreManager;
     private void Start()
     {
+        scoreManager = FindObjectOfType<ScoreManager>();
+
         myAudioSource = GetComponent<AudioSource>();
-        gm = FindObjectOfType<GameManager>();
         anim = GetComponent<Animator>();
     }
     private void OnTriggerEnter(Collider coll)
     {
-        
-        gm.AddScore(5);
+
+        scoreManager.AddCurrentScore(5);
         anim.SetBool("destroy", true);
         myAudioSource.Play();
     }
